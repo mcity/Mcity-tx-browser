@@ -1,5 +1,7 @@
 # Mcity-tx-browser
 
+[npm package](https://www.npmjs.com/package/@mcity/mcity-tx-browser)
+
 File browser vue component for transmission.um.city. The component must be used as shown with the following props:
 
 ```vue
