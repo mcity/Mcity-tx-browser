@@ -98,47 +98,60 @@
         <v-subheader inset>
           Folders
         </v-subheader>
-
-        <v-list-item
-          v-for="item in filteredFolders"
-          :key="item.name"
-          class="hover-highlight"
-          @click="explore(item.name)"
+        <v-data-table
+          :loading="loading"
+          :headers="headers"
+          :items="filteredFolders"
+          single-select
+          item-key="name"
+          hide-default-footer
+          :items-per-page="Number.MAX_SAFE_INTEGER"
+          no-data-text="--"
+          @click:row="explore"
         >
-          <v-list-item-avatar>
-            <font-awesome-icon
-              size="lg"
-              class="mx-1"
-              :icon="['fa', 'folder']"
-            />
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-subheader inset>
+          <template v-slot:item.icon>
+            <v-list-item-avatar>
+              <font-awesome-icon
+                size="lg"
+                class="mx-1"
+                :icon="['fa', 'folder']"
+              />
+            </v-list-item-avatar>
+          </template>
+        </v-data-table>
+        <v-subheader
+          inset
+          v-if="files.length > 0"
+        >
           Files (click to download)
         </v-subheader>
 
-        <v-list-item
-          v-for="item in filteredFiles"
-          :key="item.name"
-          class="hover-highlight"
-          @click="download(item.name)"
+        <v-data-table
+          v-if="files.length > 0"
+          :loading="loading"
+          :headers="headers"
+          :items="filteredFiles"
+          single-select
+          item-key="name"
+          hide-default-footer
+          :items-per-page="Number.MAX_SAFE_INTEGER"
+          no-data-text="--"
+          @click:row="download"
         >
-          <v-list-item-avatar>
-            <font-awesome-icon
-              size="lg"
-              class="mx-1"
-              :icon="getIcon(item.name.split('.').pop())"
-            />
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          <template v-slot:item.icon="{ item }">
+            <v-list-item-avatar>
+              <font-awesome-icon
+                size="lg"
+                class="mx-1"
+                :icon="getIcon(item.name.split('.').pop())"
+              />
+            </v-list-item-avatar>
+          </template>
+          <template
+            v-slot:item.size="{ item }" >
+            {{ formatBytes(item.size) }}
+          </template>
+        </v-data-table>
       </v-list>
     </v-card-text>
   </v-card>
@@ -168,7 +181,20 @@ export default {
       searchText: '',
       files: [],
       folders: [],
-      breadcrumbs: []
+      headers: [
+        { text: '', value: 'icon', align: 'middle', width: '60px', sortable: false },
+        {
+          text: 'Name',
+          align: 'start',
+          sortable: true,
+          value: 'name'
+        },
+        { text: 'Modified', value: 'dates.modified' },
+        { text: 'Created', value: 'dates.created' },
+        { text: 'Size', value: 'size' }
+      ],
+      breadcrumbs: [],
+      selected: null
     }
   },
   mounted () {
@@ -275,16 +301,18 @@ export default {
       return folders
     },
     explore (cd) {
+      if (this.loading) { return }
+      const folderName = typeof cd === 'object' ? cd.name : cd
       this.loading = true
-      if (cd.slice(0, 3) === '../') {
-        const upDirCount = cd.split('/').length
+      if (folderName.slice(0, 3) === '../') {
+        const upDirCount = folderName.split('/').length
         const pathDepth = this.path.split('/').length
         this.path = this.path.split('/').slice(0, pathDepth - upDirCount).join('/') + '/'
         if (this.path === '/') {
           this.path = ''
         }
-      } else if (cd !== '') {
-        this.path += cd + '/'
+      } else if (folderName !== '') {
+        this.path += folderName + '/'
       }
       const url = `/l/${this.share}/${this.path}`
       this.getFileList(this.share, this.path)
@@ -314,13 +342,13 @@ export default {
       this.shareWritePermission = this.$store.state.session.userRoles.filter(role => shares[shareIdx].roles.write.includes(role)).length > 0
     },
     download (file) {
-      console.log(file)
-      api.getFile(`${this.share}/file/${this.path}${file}`)
+      console.log(file.name)
+      api.getFile(`${this.share}/file/${this.path}${file.name}`)
         .then(response => {
           const link = document.createElement('a')
           link.href = response.data.file
           // Get the file name
-          const parts = file.split('/')
+          const parts = file.name.split('/')
           const lastSegment = parts.pop() || parts.pop() // handle potential trailing slash
           link.setAttribute('download', lastSegment) // or any other extension
           document.body.appendChild(link)
@@ -332,8 +360,16 @@ export default {
     },
     downloadDirectory () {
       for (const file of this.files) {
-        this.download(file.name)
+        this.download(file)
       }
+    },
+    formatBytes (bytes, decimals = 1) {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const dm = decimals < 0 ? 0 : decimals
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
     getIcon (extension) {
       const icons = {
@@ -427,7 +463,7 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .searchField {
   padding-right: 56px;
 }
@@ -437,9 +473,6 @@ export default {
 .bar-btn {
   margin-left: 16px;
 }
-.hover-highlight:hover {
-  background-color: rgb(230, 230, 230);
-}
 button.v-btn {
   padding-left: 10px;
 }
@@ -448,10 +481,27 @@ div.breadcrumbs {
   text-align: left;
 }
 a.breadcrumb-link {
-color: white;
+  color: white;
+}
+a.breadcrumb-link:hover {
+  background-color: rgb(30, 59, 94);
 }
 a.v-breadcrumbs__item {
   color: white !important;
   font-size: 20px;
+}
+div.v-data-table {
+  margin-right: 56px;
+  margin-left: 56px;
+  border-bottom: none;
+}
+.v-data-table tbody tr {
+  border-bottom: none;
+}
+tbody {
+  cursor: pointer;
+}
+td.text-start {
+  font-size: 16px;
 }
 </style>
