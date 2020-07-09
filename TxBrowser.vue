@@ -98,7 +98,28 @@
         <v-subheader inset>
           Folders
         </v-subheader>
+        <div v-if="isMobile">
+          <v-list-item
+            v-for="item in filteredFolders"
+            :key="item.name"
+            class="hover-highlight"
+            @click="explore(item.name)"
+          >
+            <v-list-item-avatar>
+              <font-awesome-icon
+                size="lg"
+                class="mx-1"
+                :icon="['fa', 'folder']"
+              />
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </div>
         <v-data-table
+          v-if="!isMobile"
           :loading="loading"
           :headers="headers"
           :items="filteredFolders"
@@ -125,9 +146,28 @@
         >
           Files (click to download)
         </v-subheader>
+        <div v-if="files.length > 0 && isMobile">
+          <v-list-item
+            v-for="item in filteredFiles"
+            :key="item.name"
+            class="hover-highlight"
+            @click="download(item.name)"
+          >
+            <v-list-item-avatar>
+              <font-awesome-icon
+                size="lg"
+                class="mx-1"
+                :icon="getIcon(item.name.split('.').pop())"
+              />
+            </v-list-item-avatar>
 
+            <v-list-item-content>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </div>
         <v-data-table
-          v-if="files.length > 0"
+          v-if="files.length > 0 && !isMobile"
           :loading="loading"
           :headers="headers"
           :items="filteredFiles"
@@ -194,7 +234,8 @@ export default {
         { text: 'Size', value: 'size' }
       ],
       breadcrumbs: [],
-      selected: null
+      selected: null,
+      isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     }
   },
   mounted () {
@@ -245,7 +286,7 @@ export default {
           this.updateBreadcrumbs()
           this.loading = false
           this.searchText = ''
-          if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+          if (!this.isMobile) {
             document.getElementById('searchField').focus()
           }
         })
