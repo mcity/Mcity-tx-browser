@@ -6,6 +6,8 @@ File browser vue component for transmission.um.city. The component must be used 
 
 ```vue
 <TxBrowser setShare='DATA' standAlone/>
+
+import TxBrowser from '@mcity/mcity-tx-browser/TxBrowser'
 ```
 
 Where setShare specifies a share defined by its URL (eg. Working Group Data's url is https://transmission.um.city/l/WGDATA, and the setShare value would be 'WGDATA').
