@@ -1,200 +1,205 @@
 <template>
-  <v-card>
-    <v-card-title class="headline primary white--text">
-      <router-link to="/">
-        <font-awesome-icon
-          size="sm"
-          class="sm-1"
-          color="white"
-          :icon="['fa', 'home']"
-          href="https://keys.um.city"
-        />
-      </router-link>
-      <div
-        class="breadcrumbs"
-        v-for="crumb of breadcrumbs"
-        :key="crumb.name"
-      >
-        /
-        <a
-          class="breadcrumb-link"
-          @click="explore(crumb.href)"
-        >
-          {{ crumb.name }}
-        </a>
-      </div>
-      <v-spacer />
-      <span>
-        <input
-          id="fileUpload"
-          type="file"
-          multiple
-          hidden
-          :disabled="!shareWritePermission"
-          @change="upload"
-        >
-        <v-btn
-          class="white bar-btn"
-          v-if="shareWritePermission"
-          @click="chooseFiles"
-        >
-          <font-awesome-icon
-            size="lg"
-            class="sm-1 btn-icon"
-            :icon="['fa', 'upload']"
-          />
-          Upload
-        </v-btn>
-        <!-- <v-btn
-          class="white bar-btn"
-          @click="downloadDirectory()"
-        >
-          <font-awesome-icon
-            size="lg"
-            class="sm-1 btn-icon"
-            :icon="['fa', 'file-archive']"
-          />
-          Download Directory
-        </v-btn> -->
-      </span>
-    </v-card-title>
-    <v-card-text class="text-left">
-      <v-list>
-        <v-list-item>
-          <v-list-item-avatar>
-            <font-awesome-icon
-              size="lg"
-              class="mx-1"
-              :icon="['fa', 'search']"
-            />
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-text-field
-              id="searchField"
-              class="searchField"
-              label="Search:"
-              v-model="searchText"
-              :error="filteredFolders.length === 0 && filteredFiles.length === 0 && searchText.length > 0"
-            />
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="filteredFolders.length === 0 && filteredFiles.length === 0">
-          <v-list-item-content>
-            <v-alert
-              type="info"
-              v-if="!loading"
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title class="headline primary white--text">
+            <router-link v-if="!standAlone" to="/">
+              <font-awesome-icon
+                size="sm"
+                class="sm-1"
+                color="white"
+                :icon="['fa', 'home']"
+              />
+            </router-link>
+            <div
+              class="breadcrumbs"
+              v-for="crumb of breadcrumbs"
+              :key="crumb.name"
             >
-              {{ searchText.length > 0 ? "No results for the current search" : "Current directory is empty" }}
-            </v-alert>
-            <v-progress-linear
-              indeterminate
-              v-if="loading"
-            />
-          </v-list-item-content>
-        </v-list-item>
+              /
+              <a
+                class="breadcrumb-link"
+                @click="explore(crumb.href)"
+              >
+                {{ crumb.name }}
+              </a>
+            </div>
+            <v-spacer />
+            <span>
+              <input
+                id="fileUpload"
+                type="file"
+                multiple
+                hidden
+                :disabled="!shareWritePermission"
+                @change="upload"
+              >
+              <v-btn
+                class="white bar-btn"
+                v-if="shareWritePermission"
+                @click="chooseFiles"
+              >
+                <font-awesome-icon
+                  size="lg"
+                  class="sm-1 btn-icon"
+                  :icon="['fa', 'upload']"
+                />
+                Upload
+              </v-btn>
+              <!-- <v-btn
+                class="white bar-btn"
+                @click="downloadDirectory()"
+              >
+                <font-awesome-icon
+                  size="lg"
+                  class="sm-1 btn-icon"
+                  :icon="['fa', 'file-archive']"
+                />
+                Download Directory
+              </v-btn> -->
+            </span>
+          </v-card-title>
+          <v-card-text class="text-left">
+            <v-list>
+              <v-list-item>
+                <v-list-item-avatar>
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'search']"
+                  />
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-text-field
+                    id="searchField"
+                    class="searchField"
+                    label="Search:"
+                    v-model="searchText"
+                    :error="filteredFolders.length === 0 && filteredFiles.length === 0 && searchText.length > 0"
+                  />
+                </v-list-item-content>
+              </v-list-item>
 
-        <v-divider />
-        <v-subheader inset>
-          Folders
-        </v-subheader>
-        <div v-if="isMobile">
-          <v-list-item
-            v-for="item in filteredFolders"
-            :key="item.name"
-            class="hover-highlight"
-            @click="explore(item.name)"
-          >
-            <v-list-item-avatar>
-              <font-awesome-icon
-                size="lg"
-                class="mx-1"
-                :icon="['fa', 'folder']"
-              />
-            </v-list-item-avatar>
+              <v-list-item v-if="filteredFolders.length === 0 && filteredFiles.length === 0">
+                <v-list-item-content>
+                  <v-alert
+                    type="info"
+                    v-if="!loading"
+                  >
+                    {{ searchText.length > 0 ? "No results for the current search" : "Current directory is empty" }}
+                  </v-alert>
+                  <v-progress-linear
+                    indeterminate
+                    v-if="loading"
+                  />
+                </v-list-item-content>
+              </v-list-item>
 
-            <v-list-item-content>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </div>
-        <v-data-table
-          v-if="!isMobile"
-          :loading="loading"
-          :headers="headers"
-          :items="filteredFolders"
-          single-select
-          item-key="name"
-          hide-default-footer
-          :items-per-page="Number.MAX_SAFE_INTEGER"
-          no-data-text="--"
-          @click:row="explore"
-        >
-          <template v-slot:item.icon>
-            <v-list-item-avatar>
-              <font-awesome-icon
-                size="lg"
-                class="mx-1"
-                :icon="['fa', 'folder']"
-              />
-            </v-list-item-avatar>
-          </template>
-        </v-data-table>
-        <v-subheader
-          inset
-          v-if="files.length > 0"
-        >
-          Files (click to download)
-        </v-subheader>
-        <div v-if="files.length > 0 && isMobile">
-          <v-list-item
-            v-for="item in filteredFiles"
-            :key="item.name"
-            class="hover-highlight"
-            @click="download(item.name)"
-          >
-            <v-list-item-avatar>
-              <font-awesome-icon
-                size="lg"
-                class="mx-1"
-                :icon="getIcon(item.name.split('.').pop())"
-              />
-            </v-list-item-avatar>
+              <v-divider />
+              <v-subheader inset>
+                Folders
+              </v-subheader>
+              <div v-if="isMobile">
+                <v-list-item
+                  v-for="item in filteredFolders"
+                  :key="item.name"
+                  class="hover-highlight"
+                  @click="explore(item.name)"
+                >
+                  <v-list-item-avatar>
+                    <font-awesome-icon
+                      size="lg"
+                      class="mx-1"
+                      :icon="['fa', 'folder']"
+                    />
+                  </v-list-item-avatar>
 
-            <v-list-item-content>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </div>
-        <v-data-table
-          v-if="files.length > 0 && !isMobile"
-          :loading="loading"
-          :headers="headers"
-          :items="filteredFiles"
-          single-select
-          item-key="name"
-          hide-default-footer
-          :items-per-page="Number.MAX_SAFE_INTEGER"
-          no-data-text="--"
-          @click:row="download"
-        >
-          <template v-slot:item.icon="{ item }">
-            <v-list-item-avatar>
-              <font-awesome-icon
-                size="lg"
-                class="mx-1"
-                :icon="getIcon(item.name.split('.').pop())"
-              />
-            </v-list-item-avatar>
-          </template>
-          <template
-            v-slot:item.size="{ item }" >
-            {{ formatBytes(item.size) }}
-          </template>
-        </v-data-table>
-      </v-list>
-    </v-card-text>
-  </v-card>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </div>
+              <v-data-table
+                v-if="!isMobile"
+                :loading="loading"
+                :headers="headers"
+                :items="filteredFolders"
+                single-select
+                item-key="name"
+                hide-default-footer
+                :items-per-page="Number.MAX_SAFE_INTEGER"
+                no-data-text="--"
+                @click:row="explore"
+              >
+                <template v-slot:item.icon>
+                  <v-list-item-avatar>
+                    <font-awesome-icon
+                      size="lg"
+                      class="mx-1"
+                      :icon="['fa', 'folder']"
+                    />
+                  </v-list-item-avatar>
+                </template>
+              </v-data-table>
+              <v-subheader
+                inset
+                v-if="files.length > 0"
+              >
+                Files (click to download)
+              </v-subheader>
+              <div v-if="files.length > 0 && isMobile">
+                <v-list-item
+                  v-for="item in filteredFiles"
+                  :key="item.name"
+                  class="hover-highlight"
+                  @click="download(item.name)"
+                >
+                  <v-list-item-avatar>
+                    <font-awesome-icon
+                      size="lg"
+                      class="mx-1"
+                      :icon="getIcon(item.name.split('.').pop())"
+                    />
+                  </v-list-item-avatar>
+
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </div>
+              <v-data-table
+                v-if="files.length > 0 && !isMobile"
+                :loading="loading"
+                :headers="headers"
+                :items="filteredFiles"
+                single-select
+                item-key="name"
+                hide-default-footer
+                :items-per-page="Number.MAX_SAFE_INTEGER"
+                no-data-text="--"
+                @click:row="download"
+              >
+                <template v-slot:item.icon="{ item }">
+                  <v-list-item-avatar>
+                    <font-awesome-icon
+                      size="lg"
+                      class="mx-1"
+                      :icon="getIcon(item.name.split('.').pop())"
+                    />
+                  </v-list-item-avatar>
+                </template>
+                <template
+                  v-slot:item.size="{ item }" >
+                  {{ formatBytes(item.size) }}
+                </template>
+              </v-data-table>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -245,8 +250,8 @@ export default {
     } else {
       this.share = this.setShare
       this.path = ''
+      this.getSharesAction()
     }
-    this.getSharesAction()
     if (this.sharesLoaded) {
       this.setWritePermission()
     }
@@ -286,7 +291,7 @@ export default {
           this.updateBreadcrumbs()
           this.loading = false
           this.searchText = ''
-          if (!this.isMobile) {
+          if (!this.isMobile && !this.standAlone) {
             document.getElementById('searchField').focus()
           }
         })
@@ -522,7 +527,7 @@ div.breadcrumbs {
   text-align: left;
 }
 a.breadcrumb-link {
-  color: white;
+  color: white !important;
 }
 a.breadcrumb-link:hover {
   background-color: rgb(30, 59, 94);
