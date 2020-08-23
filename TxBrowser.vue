@@ -100,7 +100,7 @@
               <v-subheader inset>
                 Folders
               </v-subheader>
-              <div v-if="isMobile">
+              <div v-if="$vuetify.breakpoint.mobile">
                 <v-list-item
                   v-for="item in filteredFolders"
                   :key="item.name"
@@ -121,7 +121,7 @@
                 </v-list-item>
               </div>
               <v-data-table
-                v-if="!isMobile"
+                v-if="!$vuetify.breakpoint.mobile"
                 :loading="loading"
                 :headers="headers"
                 :items="filteredFolders"
@@ -148,7 +148,7 @@
               >
                 Files (click to download)
               </v-subheader>
-              <div v-if="files.length > 0 && isMobile">
+              <div v-if="files.length > 0 && $vuetify.breakpoint.mobile">
                 <v-list-item
                   v-for="item in filteredFiles"
                   :key="item.name"
@@ -169,7 +169,7 @@
                 </v-list-item>
               </div>
               <v-data-table
-                v-if="files.length > 0 && !isMobile"
+                v-if="files.length > 0 && !$vuetify.breakpoint.mobile"
                 :loading="loading"
                 :headers="headers"
                 :items="filteredFiles"
@@ -240,7 +240,6 @@ export default {
       ],
       breadcrumbs: [],
       selected: null,
-      isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
     }
   },
   mounted () {
@@ -291,7 +290,7 @@ export default {
           this.updateBreadcrumbs()
           this.loading = false
           this.searchText = ''
-          if (!this.isMobile && !this.standAlone) {
+          if (!$vuetify.breakpoint.mobile && !this.standAlone) {
             document.getElementById('searchField').focus()
           }
         })
