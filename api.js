@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export default {
   getShares: () => {
-    return axios.get('/api/shares')
+    return axios.get(`${process.env.TX_SERVER || ''}/api/shares`)
       .then(function (response) {
         response.currDateTime = new Date().toLocaleString()
         return response
@@ -12,21 +12,21 @@ export default {
     if (typeof path === 'undefined') {
       path = ''
     }
-    return axios.get(`/api/share/${cd}/files/${path}`)
+    return axios.get(`${process.env.TX_SERVER || ''}/api/share/${cd}/files/${path}`)
       .then(function (response) {
         response.currDateTime = new Date().toLocaleString()
         return response
       })
   },
   getFile: (url) => {
-    return axios.get(`/api/share/${url}`)
+    return axios.get(`${process.env.TX_SERVER || ''}/api/share/${url}`)
       .then(function (response) {
         response.currDateTime = new Date().toLocaleString()
         return response
       })
   },
   postFile: (cd, path) => {
-    return axios.post(`/api/share/${cd}/file/${path}`)
+    return axios.post(`${process.env.TX_SERVER || ''}/api/share/${cd}/file/${path}`)
       .then(function (response) {
         response.currDateTime = new Date().toLocaleString()
         return response
