@@ -243,16 +243,17 @@ export default {
     }
   },
   mounted () {
-    if (!this.standAlone) {
-      this.share = this.$route.params.share
-      this.path = typeof this.$route.params.path === 'undefined' ? '' : this.$route.params.path + '/'
-    } else {
+    if (this.standAlone) {
       this.share = this.setShare
       this.path = ''
-      this.getSharesAction()
+    } else {
+      this.share = this.$route.params.share
+      this.path = typeof this.$route.params.path === 'undefined' ? '' : this.$route.params.path + '/'
     }
     if (this.sharesLoaded) {
       this.setWritePermission()
+    } else if (!this.standAlone) {
+      this.getSharesAction()
     }
     this.getFileList(this.share, this.path)
   },
