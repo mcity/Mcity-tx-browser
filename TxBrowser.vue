@@ -523,7 +523,7 @@ button.v-btn {
   padding-left: 10px;
 }
 div.breadcrumbs {
-  padding-left: 8px;
+  padding-left: 8px !important;
   text-align: left;
 }
 a.breadcrumb-link {

@@ -1,6 +1,6 @@
 {
     "name": "@mcity/mcity-tx-browser",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Standalone MCity Transmission file browser",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
