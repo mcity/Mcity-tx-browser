@@ -141,9 +141,9 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-                <!-- <v-btn
+                <v-btn
                   class="white bar-btn"
-                  @click="downloadDirectory()"
+                  @click="downloadDirectory"
                 >
                   <font-awesome-icon
                     size="lg"
@@ -151,7 +151,7 @@
                     :icon="['fa', 'download']"
                   />
                   Download Directory
-                </v-btn> -->
+                </v-btn>
               </div>
               <div v-if="$vuetify.breakpoint.mobile">
                 <v-list-item
@@ -274,6 +274,8 @@ export default {
       searchText: '',
       files: [],
       folders: [],
+      downloadList: [],
+      downloadInterval: null,
       createFolderDialog: false,
       newFolderName: '',
       // eslint-disable-next-line no-useless-escape
@@ -434,6 +436,7 @@ export default {
     },
     stripName (elt) {
       elt.name = elt.name.slice(-1) === '/' ? elt.name.split('/').slice(-2)[0] : elt.name.split('/').slice(-1)[0]
+      elt.name = decodeURI(elt.name)
       return elt
     },
     setWritePermission () {
@@ -453,10 +456,11 @@ export default {
       const shareIdx = shares.findIndex((share) => share.cd === this.share)
       this.shareWritePermission = this.$store.state.session.userRoles.filter(role => shares[shareIdx].roles.write.includes(role)).length > 0
     },
-    download (file) {
+    download (file, fileList = null) {
       console.log(file.name)
       api.getFile(`${this.share}/file/${this.path}${file.name}`)
         .then(response => {
+          console.log(response)
           const link = document.createElement('a')
           link.href = response.data.file
           // Get the file name
@@ -471,8 +475,27 @@ export default {
         })
     },
     downloadDirectory () {
-      for (const file of this.files) {
-        this.download(file)
+      api.getFolder(this.share, this.path)
+        .then(response => {
+          this.downloadList = response.data.files
+          this.downloadInterval = window.setInterval(this.downloadFromList, 300)
+        })
+        .catch(e => {
+          console.log('Shares error', e)
+        })
+    },
+    downloadFromList () {
+      const file = this.downloadList.pop()
+      const parts = (file.name).split('/')
+      const lastSegment = parts.pop() || parts.pop() // handle potential trailing slash
+      const link = document.createElement('a')
+      link.setAttribute('download', lastSegment)
+      link.setAttribute('href', file.url)
+      link.click()
+      if (this.downloadList.length === 0) {
+        console.log(this.downloadList.length)
+        console.log('clear interval')
+        window.clearInterval(this.downloadInterval)
       }
     },
     formatBytes (bytes, decimals = 1) {

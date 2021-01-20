@@ -7,7 +7,7 @@ export default {
         response.currDateTime = new Date().toLocaleString()
         return response
       })
-    },
+  },
   getFileList: (cd, path) => {
     if (typeof path === 'undefined') {
       path = ''
@@ -34,6 +34,13 @@ export default {
   },
   postFolder: (cd, path) => {
     return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/folder/${path}`)
+      .then(function (response) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  getFolder: (cd, path) => {
+    return axios.get(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/folder/${path}`)
       .then(function (response) {
         response.currDateTime = new Date().toLocaleString()
         return response
