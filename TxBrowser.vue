@@ -105,7 +105,7 @@
                       <font-awesome-icon
                         size="lg"
                         class="sm-1 btn-icon"
-                        :icon="['fa', 'upload']"
+                        :icon="['fa', 'folder-plus']"
                       />
                       New Folder
                     </v-btn>
@@ -141,17 +141,6 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-                <!-- <v-btn
-                  class="white bar-btn"
-                  @click="downloadDirectory()"
-                >
-                  <font-awesome-icon
-                    size="lg"
-                    class="sm-1 btn-icon"
-                    :icon="['fa', 'download']"
-                  />
-                  Download Directory
-                </v-btn> -->
               </div>
               <div v-if="$vuetify.breakpoint.mobile">
                 <v-list-item
@@ -469,11 +458,6 @@ export default {
         .catch(e => {
           console.log('Shares error', e)
         })
-    },
-    downloadDirectory () {
-      for (const file of this.files) {
-        this.download(file)
-      }
     },
     formatBytes (bytes, decimals = 1) {
       if (bytes === 0) return '0 Bytes'
