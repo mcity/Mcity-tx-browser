@@ -4,7 +4,10 @@
       <v-col>
         <v-card>
           <v-card-title class="headline primary white--text">
-            <router-link v-if="!standAlone" to="/">
+            <router-link
+              v-if="!standAlone"
+              to="/"
+            >
               <font-awesome-icon
                 size="sm"
                 class="sm-1"
@@ -26,39 +29,6 @@
               </a>
             </div>
             <v-spacer />
-            <span>
-              <input
-                id="fileUpload"
-                type="file"
-                multiple
-                hidden
-                :disabled="!shareWritePermission"
-                @change="upload"
-              >
-              <v-btn
-                class="white bar-btn"
-                v-if="shareWritePermission"
-                @click="chooseFiles"
-              >
-                <font-awesome-icon
-                  size="lg"
-                  class="sm-1 btn-icon"
-                  :icon="['fa', 'upload']"
-                />
-                Upload
-              </v-btn>
-              <!-- <v-btn
-                class="white bar-btn"
-                @click="downloadDirectory()"
-              >
-                <font-awesome-icon
-                  size="lg"
-                  class="sm-1 btn-icon"
-                  :icon="['fa', 'file-archive']"
-                />
-                Download Directory
-              </v-btn> -->
-            </span>
           </v-card-title>
           <v-card-text class="text-left">
             <v-list>
@@ -95,11 +65,94 @@
                   />
                 </v-list-item-content>
               </v-list-item>
-
               <v-divider />
-              <v-subheader inset>
-                Folders
-              </v-subheader>
+              <div
+                class="ma-4 ml-14"
+              >
+                <input
+                  id="fileUpload"
+                  type="file"
+                  multiple
+                  hidden
+                  @change="upload"
+                >
+                <v-btn
+                  class="white bar-btn ma-1 mr-4"
+                  :disabled="!shareWritePermission"
+                  @click="chooseFiles"
+                  color="primary"
+                >
+                  <font-awesome-icon
+                    size="lg"
+                    class="sm-1 btn-icon"
+                    :icon="['fa', 'upload']"
+                  />
+                  Upload
+                </v-btn>
+                <v-dialog
+                  v-model="createFolderDialog"
+                  width="500"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      class="white bar-btn ma-1 mr-4"
+                      :disabled="!shareWritePermission"
+                      @click="createFolderDialog = true"
+                      color="primary"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <font-awesome-icon
+                        size="lg"
+                        class="sm-1 btn-icon"
+                        :icon="['fa', 'upload']"
+                      />
+                      New Folder
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      New Folder
+                    </v-card-title>
+                    <v-card-text>
+                      <v-text-field
+                        v-model="newFolderName"
+                        :rules="[rules.disallowedCharacters]"
+                        label="Folder Name"
+                        maxlength="128"
+                        class="ml-6 mr-6"
+                        autofocus
+                      />
+                    </v-card-text>
+
+                    <v-divider />
+
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        color="primary"
+                        :disabled="!newFolderName || this.folderNameRegex.test(newFolderName)"
+                        text
+                        @click="createFolder(newFolderName)"
+                      >
+                        Create
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <!-- <v-btn
+                  class="white bar-btn"
+                  @click="downloadDirectory()"
+                >
+                  <font-awesome-icon
+                    size="lg"
+                    class="sm-1 btn-icon"
+                    :icon="['fa', 'download']"
+                  />
+                  Download Directory
+                </v-btn> -->
+              </div>
               <div v-if="$vuetify.breakpoint.mobile">
                 <v-list-item
                   v-for="item in filteredFolders"
@@ -142,12 +195,6 @@
                   </v-list-item-avatar>
                 </template>
               </v-data-table>
-              <v-subheader
-                inset
-                v-if="files.length > 0"
-              >
-                Files (click to download)
-              </v-subheader>
               <div v-if="files.length > 0 && $vuetify.breakpoint.mobile">
                 <v-list-item
                   v-for="item in filteredFiles"
@@ -190,7 +237,8 @@
                   </v-list-item-avatar>
                 </template>
                 <template
-                  v-slot:item.size="{ item }" >
+                  v-slot:item.size="{ item }"
+                >
                   {{ formatBytes(item.size) }}
                 </template>
               </v-data-table>
@@ -226,6 +274,13 @@ export default {
       searchText: '',
       files: [],
       folders: [],
+      createFolderDialog: false,
+      newFolderName: '',
+      // eslint-disable-next-line no-useless-escape
+      folderNameRegex: /[^\w\ \.!\-\*'\(\)]/,
+      rules: {
+        disallowedCharacters: value => !this.folderNameRegex.test(value) || 'Invalid character(s)'
+      },
       headers: [
         { text: '', value: 'icon', align: 'middle', width: '60px', sortable: false },
         {
@@ -239,7 +294,7 @@ export default {
         { text: 'Size', value: 'size' }
       ],
       breadcrumbs: [],
-      selected: null,
+      selected: null
     }
   },
   mounted () {
@@ -282,6 +337,17 @@ export default {
     chooseFiles () {
       document.getElementById('fileUpload').click()
     },
+    createFolder (folderName) {
+      api.postFolder(this.share, this.path + folderName)
+        .then(response => {
+          this.newFolderName = ''
+          this.getFileList(this.share, this.path)
+        })
+        .catch(e => {
+          console.log('Shares error', e)
+        })
+      this.createFolderDialog = false
+    },
     getFileList (share, path) {
       this.loading = true
       api.getFileList(this.share, this.path)
@@ -291,9 +357,9 @@ export default {
           this.updateBreadcrumbs()
           this.loading = false
           this.searchText = ''
-          if (!$vuetify.breakpoint.mobile && !this.standAlone) {
-            document.getElementById('searchField').focus()
-          }
+          // if (!$vuetify.breakpoint.mobile && !this.standAlone) {
+          //   document.getElementById('searchField').focus()
+          // }
         })
         .catch(e => {
           console.log('Shares error', e)
