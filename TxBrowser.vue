@@ -4,10 +4,7 @@
       <v-col>
         <v-card>
           <v-card-title class="headline primary white--text">
-            <router-link
-              v-if="!standAlone"
-              to="/"
-            >
+            <router-link v-if="!standAlone" to="/">
               <font-awesome-icon
                 size="sm"
                 class="sm-1"
@@ -21,10 +18,7 @@
               :key="crumb.name"
             >
               /
-              <a
-                class="breadcrumb-link"
-                @click="explore(crumb.href)"
-              >
+              <a class="breadcrumb-link" @click="explore(crumb.href)">
                 {{ crumb.name }}
               </a>
             </div>
@@ -46,36 +40,40 @@
                     class="searchField"
                     label="Search:"
                     v-model="searchText"
-                    :error="filteredFolders.length === 0 && filteredFiles.length === 0 && searchText.length > 0"
+                    :error="
+                      filteredFolders.length === 0 &&
+                        filteredFiles.length === 0 &&
+                        searchText.length > 0
+                    "
                   />
                 </v-list-item-content>
               </v-list-item>
 
-              <v-list-item v-if="filteredFolders.length === 0 && filteredFiles.length === 0">
+              <v-list-item
+                v-if="
+                  filteredFolders.length === 0 && filteredFiles.length === 0
+                "
+              >
                 <v-list-item-content>
-                  <v-alert
-                    type="info"
-                    v-if="!loading"
-                  >
-                    {{ searchText.length > 0 ? "No results for the current search" : "Current directory is empty" }}
+                  <v-alert type="info" v-if="!loading">
+                    {{
+                      searchText.length > 0
+                        ? 'No results for the current search'
+                        : 'Current directory is empty'
+                    }}
                   </v-alert>
-                  <v-progress-linear
-                    indeterminate
-                    v-if="loading"
-                  />
+                  <v-progress-linear indeterminate v-if="loading" />
                 </v-list-item-content>
               </v-list-item>
               <v-divider />
-              <div
-                class="ma-4 ml-14"
-              >
+              <div class="ma-4 ml-14">
                 <input
                   id="fileUpload"
                   type="file"
                   multiple
                   hidden
                   @change="upload"
-                >
+                />
                 <v-btn
                   class="white bar-btn ma-1 mr-4"
                   :disabled="!shareWritePermission"
@@ -89,10 +87,7 @@
                   />
                   Upload
                 </v-btn>
-                <v-dialog
-                  v-model="createFolderDialog"
-                  width="500"
-                >
+                <v-dialog v-model="createFolderDialog" width="500">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       class="white bar-btn ma-1 mr-4"
@@ -132,7 +127,10 @@
                       <v-spacer />
                       <v-btn
                         color="primary"
-                        :disabled="!newFolderName || this.folderNameRegex.test(newFolderName)"
+                        :disabled="
+                          !newFolderName ||
+                            this.folderNameRegex.test(newFolderName)
+                        "
                         text
                         @click="createFolder(newFolderName)"
                       >
@@ -158,7 +156,9 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      decodeURI(item.name)
+                    }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -200,7 +200,9 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      decodeURI(item.name)
+                    }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -225,9 +227,7 @@
                     />
                   </v-list-item-avatar>
                 </template>
-                <template
-                  v-slot:item.size="{ item }"
-                >
+                <template v-slot:item.size="{ item }">
                   {{ formatBytes(item.size) }}
                 </template>
               </v-data-table>
@@ -268,10 +268,17 @@ export default {
       // eslint-disable-next-line no-useless-escape
       folderNameRegex: /[^\w\ \.!\-\*'\(\)]/,
       rules: {
-        disallowedCharacters: value => !this.folderNameRegex.test(value) || 'Invalid character(s)'
+        disallowedCharacters: value =>
+          !this.folderNameRegex.test(value) || 'Invalid character(s)'
       },
       headers: [
-        { text: '', value: 'icon', align: 'middle', width: '60px', sortable: false },
+        {
+          text: '',
+          value: 'icon',
+          align: 'middle',
+          width: '60px',
+          sortable: false
+        },
         {
           text: 'Name',
           align: 'start',
@@ -292,7 +299,10 @@ export default {
       this.path = ''
     } else {
       this.share = this.$route.params.share
-      this.path = typeof this.$route.params.path === 'undefined' ? '' : this.$route.params.path + '/'
+      this.path =
+        typeof this.$route.params.path === 'undefined'
+          ? ''
+          : this.$route.params.path + '/'
     }
     if (this.sharesLoaded) {
       this.setWritePermission()
@@ -302,19 +312,19 @@ export default {
     this.getFileList(this.share, this.path)
   },
   methods: {
-    ...mapActions([
-      'getSharesAction'
-    ]),
+    ...mapActions(['getSharesAction']),
     updateBreadcrumbs () {
       const folderList = this.path.split('/')
       if (folderList.slice(-1)[0] === '') {
         folderList.pop()
       }
-      this.breadcrumbs = [{
-        name: this.share,
-        disabled: folderList.length === 0,
-        href: '../'.repeat(folderList.length)
-      }]
+      this.breadcrumbs = [
+        {
+          name: this.share,
+          disabled: folderList.length === 0,
+          href: '../'.repeat(folderList.length)
+        }
+      ]
       for (let i = 0; i < folderList.length; i++) {
         this.breadcrumbs.push({
           name: folderList[i],
@@ -327,7 +337,8 @@ export default {
       document.getElementById('fileUpload').click()
     },
     createFolder (folderName) {
-      api.postFolder(this.share, this.path + folderName)
+      api
+        .postFolder(this.share, this.path + folderName)
         .then(response => {
           this.newFolderName = ''
           this.getFileList(this.share, this.path)
@@ -339,10 +350,17 @@ export default {
     },
     getFileList (share, path) {
       this.loading = true
-      api.getFileList(this.share, this.path)
+      api
+        .getFileList(this.share, this.path)
         .then(response => {
-          this.files = response.data.files.filter(f => f.type === 'FILE').map(elt => this.stripName(elt))
-          this.folders = this.prependDotDot(response.data.files.filter(f => f.type === 'FOLDER').map(elt => this.stripName(elt)))
+          this.files = response.data.files
+            .filter(f => f.type === 'FILE')
+            .map(elt => this.stripName(elt))
+          this.folders = this.prependDotDot(
+            response.data.files
+              .filter(f => f.type === 'FOLDER')
+              .map(elt => this.stripName(elt))
+          )
           this.updateBreadcrumbs()
           this.loading = false
           this.searchText = ''
@@ -358,7 +376,8 @@ export default {
       // handle file here. File will be an object.
       for (const file of blob.srcElement.files) {
         console.log(this.path, file)
-        api.postFile(this.share, this.path + file.name)
+        api
+          .postFile(this.share, this.path + file.name)
           .then(response => {
             const fields = response.data.FileUpload.fields
             const url = response.data.FileUpload.url
@@ -402,13 +421,19 @@ export default {
       return folders
     },
     explore (cd) {
-      if (this.loading) { return }
+      if (this.loading) {
+        return
+      }
       const folderName = typeof cd === 'object' ? cd.name : cd
       this.loading = true
       if (folderName.slice(0, 3) === '../') {
         const upDirCount = folderName.split('/').length
         const pathDepth = this.path.split('/').length
-        this.path = this.path.split('/').slice(0, pathDepth - upDirCount).join('/') + '/'
+        this.path =
+          this.path
+            .split('/')
+            .slice(0, pathDepth - upDirCount)
+            .join('/') + '/'
         if (this.path === '/') {
           this.path = ''
         }
@@ -422,12 +447,16 @@ export default {
       }
     },
     stripName (elt) {
-      elt.name = elt.name.slice(-1) === '/' ? elt.name.split('/').slice(-2)[0] : elt.name.split('/').slice(-1)[0]
+      elt.name =
+        elt.name.slice(-1) === '/'
+          ? elt.name.split('/').slice(-2)[0]
+          : elt.name.split('/').slice(-1)[0]
       return elt
     },
     setWritePermission () {
       if (this.standAlone) {
-        api.getShares()
+        api
+          .getShares()
           .then(response => {
             this.setWritePermissionHelper(response.data.shares)
           })
@@ -439,12 +468,16 @@ export default {
       }
     },
     setWritePermissionHelper (shares) {
-      const shareIdx = shares.findIndex((share) => share.cd === this.share)
-      this.shareWritePermission = this.$store.state.session.userRoles.filter(role => shares[shareIdx].roles.write.includes(role)).length > 0
+      const shareIdx = shares.findIndex(share => share.cd === this.share)
+      this.shareWritePermission =
+        this.$store.state.session.userRoles.filter(role =>
+          shares[shareIdx].roles.write.includes(role)
+        ).length > 0
     },
     download (file) {
       console.log(file.name)
-      api.getFile(`${this.share}/file/${this.path}${file.name}`)
+      api
+        .getFile(`${this.share}/file/${this.path}${file.name}`)
         .then(response => {
           const link = document.createElement('a')
           link.href = response.data.file
@@ -527,10 +560,14 @@ export default {
   },
   computed: {
     filteredFolders () {
-      return this.folders.filter(t => t.name.toLowerCase().includes(this.searchText.toLowerCase()))
+      return this.folders.filter(t =>
+        t.name.toLowerCase().includes(this.searchText.toLowerCase())
+      )
     },
     filteredFiles () {
-      return this.files.filter(t => t.name.toLowerCase().includes(this.searchText.toLowerCase()))
+      return this.files.filter(t =>
+        t.name.toLowerCase().includes(this.searchText.toLowerCase())
+      )
     },
     sharesLoaded () {
       return this.standAlone || this.$store.state.shares.length > 0
@@ -538,12 +575,23 @@ export default {
   },
   watch: {
     '$route.path': function (path) {
-      if (this.standAlone || this.$route.path.substr(0, 3) === '/d/') return false
-      const newPath = this.$route.path.split('/').slice(3, -1).join('/')
-      if ((newPath.concat('/') !== this.path && newPath.length !== 0) || (newPath !== this.path && newPath.length === 0)) {
+      if (this.standAlone || this.$route.path.substr(0, 3) === '/d/')
+        return false
+      const newPath = this.$route.path
+        .split('/')
+        .slice(3, -1)
+        .join('/')
+      if (
+        (newPath.concat('/') !== this.path && newPath.length !== 0) ||
+        (newPath !== this.path && newPath.length === 0)
+      ) {
         if (this.path.length > newPath.length) {
           const offset = newPath.length === 0 ? 0 : 1
-          this.explore('../'.repeat(this.path.substr(newPath.length + offset).split('/').length - 1))
+          this.explore(
+            '../'.repeat(
+              this.path.substr(newPath.length + offset).split('/').length - 1
+            )
+          )
         } else {
           this.explore(newPath.substr(this.path.length))
         }
