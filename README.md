@@ -2,10 +2,17 @@
 
 [npm package](https://www.npmjs.com/package/@mcity/mcity-tx-browser)
 
+To publish to NPM, update the version in `package.json` and use the following commands:
+
+```
+npm login
+npm publish --access public
+```
+
 File browser vue component for transmission.um.city. The component must be used as shown with the following props:
 
 ```vue
-<TxBrowser setShare='DATA' standAlone/>
+<TxBrowser setShare="DATA" standAlone />
 
 import TxBrowser from '@mcity/mcity-tx-browser/TxBrowser'
 ```
