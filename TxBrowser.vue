@@ -156,7 +156,9 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      item.decodedName
+                    }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -198,7 +200,9 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      item.decodedName
+                    }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -279,7 +283,7 @@ export default {
           text: 'Name',
           align: 'start',
           sortable: true,
-          value: 'name'
+          value: 'decodedName'
         },
         { text: 'Modified', value: 'dates.modified' },
         { text: 'Created', value: 'dates.created' },
@@ -447,6 +451,7 @@ export default {
         elt.name.slice(-1) === '/'
           ? elt.name.split('/').slice(-2)[0]
           : elt.name.split('/').slice(-1)[0]
+      elt.decodedName = decodeURI(elt.name)
       return elt
     },
     setWritePermission () {
@@ -556,18 +561,14 @@ export default {
   },
   computed: {
     filteredFolders () {
-      return this.folders
-        .filter(t =>
-          t.name.toLowerCase().includes(this.searchText.toLowerCase())
-        )
-        .forEach(t => (t.name = decodeURI(t.name)))
+      return this.folders.filter(t =>
+        t.name.toLowerCase().includes(this.searchText.toLowerCase())
+      )
     },
     filteredFiles () {
-      return this.files
-        .filter(t =>
-          t.name.toLowerCase().includes(this.searchText.toLowerCase())
-        )
-        .forEach(t => (t.name = decodeURI(t.name)))
+      return this.files.filter(t =>
+        t.name.toLowerCase().includes(this.searchText.toLowerCase())
+      )
     },
     sharesLoaded () {
       return this.standAlone || this.$store.state.shares.length > 0
