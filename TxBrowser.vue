@@ -156,9 +156,7 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{
-                      decodeURI(item.name)
-                    }}</v-list-item-title>
+                    <v-list-item-title>{{ item.name }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -200,9 +198,7 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{
-                      decodeURI(item.name)
-                    }}</v-list-item-title>
+                    <v-list-item-title>{{ item.name }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </div>
@@ -560,14 +556,18 @@ export default {
   },
   computed: {
     filteredFolders () {
-      return this.folders.filter(t =>
-        t.name.toLowerCase().includes(this.searchText.toLowerCase())
-      )
+      return this.folders
+        .filter(t =>
+          t.name.toLowerCase().includes(this.searchText.toLowerCase())
+        )
+        .forEach(t => (t.name = decodeURI(t.name)))
     },
     filteredFiles () {
-      return this.files.filter(t =>
-        t.name.toLowerCase().includes(this.searchText.toLowerCase())
-      )
+      return this.files
+        .filter(t =>
+          t.name.toLowerCase().includes(this.searchText.toLowerCase())
+        )
+        .forEach(t => (t.name = decodeURI(t.name)))
     },
     sharesLoaded () {
       return this.standAlone || this.$store.state.shares.length > 0
