@@ -1,5 +1,5 @@
 {
-  "name": "@mcity/mcity-tx-browser",
+  "name": "@Mcity/mcity-tx-browser",
   "repository": "git://github.com/mcity/mcity-tx-browser.git",
   "version": "1.1.7",
   "description": "Standalone MCity Transmission file browser",
