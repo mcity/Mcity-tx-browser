@@ -189,7 +189,7 @@
                   v-for="item in filteredFiles"
                   :key="item.name"
                   class="hover-highlight"
-                  @click="download(item.name)"
+                  @click="download(item)"
                 >
                   <v-list-item-avatar>
                     <font-awesome-icon
