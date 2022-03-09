@@ -38,5 +38,19 @@ export default {
         response.currDateTime = new Date().toLocaleString()
         return response
       })
+  },
+  deleteFile: (cd, path) => {
+    return axios.delete(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/file/${path}`)
+      .then(function (response) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  deleteFolder: (cd, path) => {
+    return axios.delete(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/folder/${path}`)
+      .then(function (response) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
   }
 }

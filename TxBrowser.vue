@@ -183,6 +183,14 @@
                     />
                   </v-list-item-avatar>
                 </template>
+                <template v-slot:item.actions>
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'trash']"
+                    @click="deleteFolder(item)"
+                  />
+                </template>
               </v-data-table>
               <div v-if="files.length > 0 && $vuetify.breakpoint.mobile">
                 <v-list-item
@@ -229,6 +237,14 @@
                 </template>
                 <template v-slot:item.size="{ item }">
                   {{ formatBytes(item.size) }}
+                </template>
+                <template v-slot:item.actions>
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'trash']"
+                    @click="deleteFile(item)"
+                  />
                 </template>
               </v-data-table>
             </v-list>
@@ -287,7 +303,8 @@ export default {
         },
         { text: 'Modified', value: 'dates.modified' },
         { text: 'Created', value: 'dates.created' },
-        { text: 'Size', value: 'size' }
+        { text: 'Size', value: 'size' },
+        { text: 'Actions', value: 'actions' }
       ],
       breadcrumbs: [],
       selected: null
@@ -492,6 +509,27 @@ export default {
         .catch(e => {
           console.log('Shares error', e)
         })
+    },
+    deleteFile (file) {
+      api
+        .deleteFile(this.share, `${this.path}${file.name}`)
+        .then(response => {
+          this.getFileList(this.share, this.path)
+        })
+        .catch(e => {
+          console.log('Error while deleting: ', e)
+        })
+    },
+    deleteFolder (folder) {
+      api
+        .deleteFolder(this.share, `${this.path}${folder.name}`)
+        .then(response => {
+          this.getFileList(this.share, this.path)
+        })
+        .catch(e => {
+          console.log('Error while deleting: ', e)
+        })
+
     },
     formatBytes (bytes, decimals = 1) {
       if (bytes === 0) return '0 Bytes'
