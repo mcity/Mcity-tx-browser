@@ -172,7 +172,6 @@
                 hide-default-footer
                 :items-per-page="Number.MAX_SAFE_INTEGER"
                 no-data-text="--"
-                @click:row="explore"
               >
                 <template v-slot:item.icon>
                   <v-list-item-avatar>
@@ -184,6 +183,12 @@
                   </v-list-item-avatar>
                 </template>
                 <template v-slot:item.actions>
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'folder-open']"
+                    @click="explore(item)"
+                  />
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
@@ -224,7 +229,6 @@
                 hide-default-footer
                 :items-per-page="Number.MAX_SAFE_INTEGER"
                 no-data-text="--"
-                @click:row="download"
               >
                 <template v-slot:item.icon="{ item }">
                   <v-list-item-avatar>
@@ -239,6 +243,12 @@
                   {{ formatBytes(item.size) }}
                 </template>
                 <template v-slot:item.actions>
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'file-arrow-down']"
+                    @click="download(item)"
+                  />
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
