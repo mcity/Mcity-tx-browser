@@ -182,7 +182,7 @@
                     />
                   </v-list-item-avatar>
                 </template>
-                <template v-slot:item.actions>
+                <template v-slot:item.actions="{ item }">
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
@@ -242,11 +242,11 @@
                 <template v-slot:item.size="{ item }">
                   {{ formatBytes(item.size) }}
                 </template>
-                <template v-slot:item.actions>
+                <template v-slot:item.actions="{ item }">
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
-                    :icon="['fa', 'file-arrow-down']"
+                    :icon="['fa', 'download']"
                     @click="download(item)"
                   />
                   <font-awesome-icon
