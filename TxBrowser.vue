@@ -145,7 +145,7 @@
                   v-for="item in filteredFolders"
                   :key="item.name"
                   class="hover-highlight"
-                  @click="explore(item.name)"
+                  @click.stop="explore(item.name)"
                 >
                   <v-list-item-avatar>
                     <font-awesome-icon
@@ -172,6 +172,7 @@
                 hide-default-footer
                 :items-per-page="Number.MAX_SAFE_INTEGER"
                 no-data-text="--"
+                @click.stop="explore"
               >
                 <template v-slot:item.icon>
                   <v-list-item-avatar>
@@ -187,13 +188,13 @@
                     size="lg"
                     class="mx-1"
                     :icon="['fa', 'folder-open']"
-                    @click="explore(item)"
+                    @click.stop="explore(item)"
                   />
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
                     :icon="['fa', 'trash']"
-                    @click="deleteFolder(item)"
+                    @click.stop="deleteFolder(item)"
                   />
                 </template>
               </v-data-table>
@@ -202,7 +203,7 @@
                   v-for="item in filteredFiles"
                   :key="item.name"
                   class="hover-highlight"
-                  @click="download(item)"
+                  @click.stop="download(item)"
                 >
                   <v-list-item-avatar>
                     <font-awesome-icon
@@ -247,13 +248,13 @@
                     size="lg"
                     class="mx-1"
                     :icon="['fa', 'download']"
-                    @click="download(item)"
+                    @click.stop="download(item)"
                   />
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
                     :icon="['fa', 'trash']"
-                    @click="deleteFile(item)"
+                    @click.stop="deleteFile(item)"
                   />
                 </template>
               </v-data-table>
