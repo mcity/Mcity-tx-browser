@@ -195,6 +195,7 @@
                     class="mx-1"
                     :icon="['fa', 'trash']"
                     @click.stop="deleteFolder(item)"
+                    v-if="item.decodedName != '../'"
                   />
                 </template>
               </v-data-table>
@@ -230,6 +231,7 @@
                 hide-default-footer
                 :items-per-page="Number.MAX_SAFE_INTEGER"
                 no-data-text="--"
+                @click:row="download"
               >
                 <template v-slot:item.icon="{ item }">
                   <v-list-item-avatar>
@@ -439,6 +441,7 @@ export default {
             created: null,
             modified: null
           },
+          decodedName: '../',
           name: '../',
           size: null,
           tags: [],
