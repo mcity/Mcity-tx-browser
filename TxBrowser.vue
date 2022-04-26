@@ -172,7 +172,7 @@
                 hide-default-footer
                 :items-per-page="Number.MAX_SAFE_INTEGER"
                 no-data-text="--"
-                @click:row.stop="explore"
+                @click:row="explore"
               >
                 <template v-slot:item.icon>
                   <v-list-item-avatar>
