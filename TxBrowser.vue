@@ -525,7 +525,7 @@ export default {
         })
     },
     deleteFile (file) {
-      api
+      confirm("Are you sure you want to delete this file?") && api
         .deleteFile(this.share, `${this.path}${file.name}`)
         .then(response => {
           this.getFileList(this.share, this.path)
@@ -535,7 +535,7 @@ export default {
         })
     },
     deleteFolder (folder) {
-      api
+      confirm("Are you sure you want to delete this folder?") && api
         .deleteFolder(this.share, `${this.path}${folder.name}`)
         .then(response => {
           this.getFileList(this.share, this.path)
