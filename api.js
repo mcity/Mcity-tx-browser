@@ -52,5 +52,47 @@ export default {
         response.currDateTime = new Date().toLocaleString()
         return response
       })
-  }
+  },
+  moveFile: (cd, path, new_cd, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/move/file/${path}`, {new_path: new_path, new_cd: new_cd})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  moveFolder: (cd, path, new_cd, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/move/folder/${path}`, {new_path: new_path, new_cd: new_cd})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  renameFile: (cd, path, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/rename/file/${path}`, {new_path: new_path})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  renameFolder: (cd, path, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/rename/folder/${path}`, {new_path: new_path})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  copyFile: (cd, path, new_cd, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/copy/file/${path}`, {new_path: new_path, new_cd: new_cd})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
+  copyFolder: (cd, path, new_cd, new_path) => {
+    return axios.post(`${process.env.VUE_APP_TX_SERVER || ''}/api/share/${cd}/copy/folder/${path}`, {new_path: new_path, new_cd: new_cd})
+      .then(function (responsse) {
+        response.currDateTime = new Date().toLocaleString()
+        return response
+      })
+  },
 }
