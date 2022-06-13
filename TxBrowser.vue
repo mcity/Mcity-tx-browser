@@ -363,9 +363,12 @@ export default {
       newFilePath: '',
       // eslint-disable-next-line no-useless-escape
       folderNameRegex: /[^\w\ \.!\-\*'\(\)]/,
+      filePathRegex: /[^\w\ \.!\-\*'\(\)\/]/,
       rules: {
         disallowedCharacters: value =>
-          !this.folderNameRegex.test(value) || 'Invalid character(s)'
+          !this.folderNameRegex.test(value) || 'Invalid character(s)',
+        disallowedCharactersFileOps: value =>
+          !this.filePathRegex.test(value) || 'Invalid file path',
       },
       headers: [
         {
@@ -614,24 +617,27 @@ export default {
           })
     },
     startMoveFile (file) {
+      this.newFilePath = this.path
       this.showFileOpDialog = true
       this.dialogMode = 'move'
       this.editedFile = file
-      this.newFilePath = this.path
     },
-    startRenameFile (file) {
+    startRenameFile(file) {
+      this.newFilePath = this.path
       this.showFileOpDialog = true
       this.dialogMode = 'rename'
       this.editedFile = file
-      this.newFilePath = this.path
     },
     startCopyFile (file) {
+      this.newFilePath = this.path
       this.showFileOpDialog = true
       this.dialogMode = 'copy'
       this.editedFile = file
-      this.newFilePath = this.path
     },
     finishFileOp(newFilePath) {
+      if (newFilePath.charAt(0) !== '/') {
+        newFilePath = `${this.path}${newFilePath}`
+      }
       switch (this.dialogMode) {
         case 'move':
           api.moveFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
