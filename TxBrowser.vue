@@ -251,6 +251,7 @@
                     class="mx-1"
                     :icon="['fa', 'download']"
                     @click.stop="download(item)"
+                    title="Download"
                   />
                   <font-awesome-icon
                     size="lg"
@@ -258,6 +259,7 @@
                     :icon="['fa', 'file-export']"
                     :disabled="!shareWritePermission"
                     @click.stop="startMoveFile(item)"
+                    title="Move"
                   />
                   <font-awesome-icon
                     size="lg"
@@ -265,13 +267,15 @@
                     :icon="['fa', 'copy']"
                     :disabled="!shareWritePermission"
                     @click.stop="startCopyFile(item)"
+                    title="Copy"
                   />
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
-                    :icon="['fa', 'file-pen']"
+                    :icon="['fa', 'pen-to-square']"
                     :disabled="!shareWritePermission"
                     @click.stop="startRenameFile(item)"
+                    title="Rename"
                   />
                   <font-awesome-icon
                     size="lg"
@@ -279,6 +283,7 @@
                     :icon="['fa', 'trash']"
                     :disabled="!shareWritePermission"
                     @click.stop="deleteFile(item)"
+                    title="Delete"
                   />
                 </template>
               </v-data-table>
