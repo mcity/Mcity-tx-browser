@@ -306,7 +306,7 @@
         <v-card-text>
           <v-text-field
             v-model="newFilePath"
-            :rules="[rules.disallowedCharacters]"
+            :rules="[rules.disallowedCharactersFileOps]"
             label="File Path and Name"
             maxlength="128"
             class="ml-6 mr-6"
@@ -319,7 +319,7 @@
           <v-btn
             color="primary"
             :disabled="
-              !newFilePath || this.folderNameRegex.test(newFilePath)
+              !newFilePath || this.filePathRegex.test(newFilePath)
             "
             text
             @click="finishFileOp(newFilePath)"
