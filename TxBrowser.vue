@@ -629,7 +629,7 @@ export default {
     finishFileOp(newFilePath) {
       switch (this.dialogMode) {
         case 'move':
-          this.moveFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
+          api.moveFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
           .then(() => {
             this.getFileList(this.share, this.path)
           })
@@ -638,7 +638,7 @@ export default {
           })
           break
         case 'rename':
-          this.renameFile(this.share, `${this.path}${this.editedFile.name}`, newFilePath)
+          api.renameFile(this.share, `${this.path}${this.editedFile.name}`, newFilePath)
           .then(() => {
             this.getFileList(this.share, this.path)
           })
@@ -647,7 +647,7 @@ export default {
           })
           break
         case 'copy':
-          this.copyFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
+          api.copyFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
           .then(() => {
             this.getFileList(this.share, this.path)
           })
