@@ -255,7 +255,29 @@
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
+                    :icon="['fa', 'file-export']"
+                    :disabled="!shareWritePermission"
+                    @click.stop="startMoveFile(item)"
+                  />
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'copy']"
+                    :disabled="!shareWritePermission"
+                    @click.stop="startCopyFile(item)"
+                  />
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
+                    :icon="['fa', 'file-pen']"
+                    :disabled="!shareWritePermission"
+                    @click.stop="startRenameFile(item)"
+                  />
+                  <font-awesome-icon
+                    size="lg"
+                    class="mx-1"
                     :icon="['fa', 'trash']"
+                    :disabled="!shareWritePermission"
                     @click.stop="deleteFile(item)"
                   />
                 </template>
@@ -265,6 +287,43 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-dialog v-model="showFileOpDialog" width="500">
+      <v-card>
+        <v-card-title v-if="dialogMode === 'move'">
+          Move File
+        </v-card-title>
+        <v-card-title v-else-if="dialogMode === 'rename'">
+          Rename File
+        </v-card-title>
+        <v-card-title v-else-if="dialogMode === 'copy'">
+          Copy File
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="newFilePath"
+            :rules="[rules.disallowedCharacters]"
+            label="File Path and Name"
+            maxlength="128"
+            class="ml-6 mr-6"
+            autofocus
+          />
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            :disabled="
+              !newFilePath || this.folderNameRegex.test(newFilePath)
+            "
+            text
+            @click="finishFileOp(newFilePath)"
+          >
+            Submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -293,7 +352,10 @@ export default {
       files: [],
       folders: [],
       createFolderDialog: false,
+      showFileOpDialog: false,
+      dialogMode: '',
       newFolderName: '',
+      newFilePath: '',
       // eslint-disable-next-line no-useless-escape
       folderNameRegex: /[^\w\ \.!\-\*'\(\)]/,
       rules: {
@@ -525,25 +587,76 @@ export default {
         })
     },
     deleteFile (file) {
-      confirm("Are you sure you want to delete this file?") && api
-        .deleteFile(this.share, `${this.path}${file.name}`)
-        .then(response => {
-          this.getFileList(this.share, this.path)
-        })
-        .catch(e => {
-          console.log('Error while deleting: ', e)
-        })
+      confirm('Are you sure you want to delete this file?') &&
+        api
+          .deleteFile(this.share, `${this.path}${file.name}`)
+          .then(response => {
+            this.getFileList(this.share, this.path)
+          })
+          .catch(e => {
+            console.log('Error while deleting: ', e)
+          })
     },
     deleteFolder (folder) {
-      confirm("Are you sure you want to delete this folder?") && api
-        .deleteFolder(this.share, `${this.path}${folder.name}`)
-        .then(response => {
-          this.getFileList(this.share, this.path)
-        })
-        .catch(e => {
-          console.log('Error while deleting: ', e)
-        })
-
+      confirm('Are you sure you want to delete this folder?') &&
+        api
+          .deleteFolder(this.share, `${this.path}${folder.name}`)
+          .then(response => {
+            this.getFileList(this.share, this.path)
+          })
+          .catch(e => {
+            console.log('Error while deleting: ', e)
+          })
+    },
+    startMoveFile (file) {
+      this.showFileOpDialog = true
+      this.dialogMode = 'move'
+      this.editedFile = file
+      this.newFilePath = this.path
+    },
+    startRenameFile (file) {
+      this.showFileOpDialog = true
+      this.dialogMode = 'rename'
+      this.editedFile = file
+      this.newFilePath = this.path
+    },
+    startCopyFile (file) {
+      this.showFileOpDialog = true
+      this.dialogMode = 'copy'
+      this.editedFile = file
+      this.newFilePath = this.path
+    },
+    finishFileOp(newFilePath) {
+      switch (this.dialogMode) {
+        case 'move':
+          this.moveFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
+          .then(() => {
+            this.getFileList(this.share, this.path)
+          })
+          .catch(e => {
+            console.log('Error while moving: ', e)
+          })
+          break
+        case 'rename':
+          this.renameFile(this.share, `${this.path}${this.editedFile.name}`, newFilePath)
+          .then(() => {
+            this.getFileList(this.share, this.path)
+          })
+          .catch(e => {
+            console.log('Error while renaming: ', e)
+          })
+          break
+        case 'copy':
+          this.copyFile(this.share, `${this.path}${this.editedFile.name}`, this.share, newFilePath)
+          .then(() => {
+            this.getFileList(this.share, this.path)
+          })
+          .catch(e => {
+            console.log('Error while copying: ', e)
+          })
+          break
+      }
+      this.showFileOpDialog = false
     },
     formatBytes (bytes, decimals = 1) {
       if (bytes === 0) return '0 Bytes'
