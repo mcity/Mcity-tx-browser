@@ -637,6 +637,8 @@ export default {
     finishFileOp(newFilePath) {
       if (newFilePath.charAt(0) !== '/') {
         newFilePath = `${this.path}${newFilePath}`
+      } else {
+        newFilePath = newFilePath.substring(1)
       }
       switch (this.dialogMode) {
         case 'move':
