@@ -617,19 +617,19 @@ export default {
           })
     },
     startMoveFile (file) {
-      this.newFilePath = this.path
+      this.newFilePath = '/' + this.path
       this.showFileOpDialog = true
       this.dialogMode = 'move'
       this.editedFile = file
     },
     startRenameFile(file) {
-      this.newFilePath = this.path
+      this.newFilePath = '/' + this.path
       this.showFileOpDialog = true
       this.dialogMode = 'rename'
       this.editedFile = file
     },
     startCopyFile (file) {
-      this.newFilePath = this.path
+      this.newFilePath = '/' + this.path
       this.showFileOpDialog = true
       this.dialogMode = 'copy'
       this.editedFile = file
