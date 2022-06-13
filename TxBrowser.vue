@@ -272,7 +272,7 @@
                   <font-awesome-icon
                     size="lg"
                     class="mx-1"
-                    :icon="['fa', 'pen-to-square']"
+                    :icon="['fa', 'file-edit']"
                     :disabled="!shareWritePermission"
                     @click.stop="startRenameFile(item)"
                     title="Rename"
